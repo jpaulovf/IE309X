@@ -1,6 +1,10 @@
 # IE309X
 ## Repositório do projeto da disciplina IE309X - Oficina de IoT
 
+---
+
+### 1. Introdução
+
 Este repositório contém os códigos desenvolvidos para a disciplina IE309X da Unicamp, ministrada durante o primeiro semestre de 2019. O grupo deste trabalho é composto pelos seguintes membros:
 
 - Fabio Bassan
@@ -12,4 +16,19 @@ O tema do trabalho é o desenvolvimento de um medidor de consumo de energia elé
 
 Neste repositório colocaremos o código-fonte do ESP32 e outros eventuais códigos que forem necessários.
 
-*Última atualização* : 03/04/2019 por [jpaulovf](github.com/jpaulovf "jpaulovf")
+### 2. Clonando
+
+Para clonar este repositório, digite:
+
+`git clone https://github.com/jpaulovf/IE309X.git`
+
+### 3. Conteúdo
+
+Este repositório, até o momento, possui os seguintes diretórios:
+
+- **Source**: Diretório com os códigos-fonte.
+    - **TesteBlynk**: Diretório com o primeiro teste do ESP32 com Blynk;
+    - **libraries**: Bibliotecas necessárias para que os testes funcionem.
+
+--- 
+*Última atualização* : 04/04/2019 por [jpaulovf](http://github.com/jpaulovf)
