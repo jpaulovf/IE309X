@@ -27,6 +27,7 @@ Este repositório, até o momento, possui os seguintes diretórios:
 - **Source**: Diretório com os códigos-fonte.
     - **TesteBlynk**: Diretório com o primeiro teste do ESP32 com Blynk;
     - **libraries**: Bibliotecas necessárias para que os testes funcionem.
+    - **ESP32_SPI**: Teste do ESP32 com comunicação SPI
 
 ## Detalhamento
 
