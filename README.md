@@ -28,6 +28,7 @@ Este repositório, até o momento, possui os seguintes diretórios:
     - **TesteBlynk**: Diretório com o primeiro teste do ESP32 com Blynk;
     - **libraries**: Bibliotecas necessárias para que os testes funcionem.
     - **ESP32_SPI**: Teste do ESP32 com comunicação SPI
+    - **EnergyMeter**: Arquivos com o firmware principal
 
 ## Detalhamento
 
@@ -63,12 +64,12 @@ Fonte: [Baú da Eletrônica](http://www.baudaeletronica.com.br)
 |-----------------------|-------------|-------------|-------------|-------------|
 |                       | S1&nbsp;S2&nbsp;S3&nbsp;S4 | S1&nbsp;S2&nbsp;S3&nbsp;S4 | S1&nbsp;S2&nbsp;S3&nbsp;S4 | S1&nbsp;S2&nbsp;S3&nbsp;S4 |
 | Estudo preliminar     | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;|             |             |             |
-| Hardware: esquemático |             | X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
-| Hardware: PCB         |             | X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
-| Firmware              |             | X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
-| Aplicação             |             | X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
+| Hardware: esquemático |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
+| Hardware: PCB         |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
+| Firmware              |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
+| Aplicação             |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
 | Integração            |             |             |&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; #&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;      |
-| Testes unitários      |             | X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|
+| Testes unitários      |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|
 | Testes finais         |             |             |             | #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|
 
 ---
@@ -78,4 +79,4 @@ Fonte: [Baú da Eletrônica](http://www.baudaeletronica.com.br)
 X : Executado
 
 --- 
-*Última atualização* : 05/04/2019 por [jpaulovf](http://github.com/jpaulovf)
+*Última atualização* : 24/04/2019 por [jpaulovf](http://github.com/jpaulovf)
