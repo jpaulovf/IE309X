@@ -25,10 +25,13 @@ Para clonar este repositório, digite:
 Este repositório, até o momento, possui os seguintes diretórios:
 
 - **Source**: Diretório com os códigos-fonte.
-    - **TesteBlynk**: Diretório com o primeiro teste do ESP32 com Blynk;
+    - **TesteBlynk**: Diretório com o primeiro teste do ESP32 com Blynk.
     - **libraries**: Bibliotecas necessárias para que os testes funcionem.
-    - **ESP32_SPI**: Teste do ESP32 com comunicação SPI
-    - **EnergyMeter**: Arquivos com o firmware principal
+    - **ESP32_SPI**: Teste do ESP32 com comunicação SPI.
+    - **EnergyMeter**: Arquivos com o firmware principal.
+- **Projeto**: Diretório com arquivos do projeto.
+    - **Schematics**: Esquemáticos do projeto eletrônico.
+    - **Firmware**: Diagramas do projeto do firmware.
 
 ## Detalhamento
 
