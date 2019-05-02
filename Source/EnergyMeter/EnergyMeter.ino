@@ -1,3 +1,4 @@
+
 /******************************************************
  * EnergyMeter - Firmware do medidor de energia 
  * Disciplina: IE309X - Oficina de IoT          
@@ -42,6 +43,9 @@
 
 // ----- Arquivos do projeto -----
 #include "RGBLed.h"
+#include "UserInput.h"
+#include "DataStorage.h"
+#include "Tests.h"
 
 /*-----------------------------------------------------
  *  Definições e macros
@@ -66,33 +70,17 @@
 
 // Teste
 RGBLed led(PIN_LED_R, PIN_LED_G, PIN_LED_B);
- 
+
 /*-----------------------------------------------------
  *  Funções
  *-----------------------------------------------------*/
 
 void setup() {
 
-  Serial.begin(115200);  
-  pinMode(PIN_DEVLED, OUTPUT);
+    testStorage();
   
 }
 
 void loop() {
-
-   Serial.write("ESP32!\n");
-   digitalWrite(PIN_DEVLED, HIGH);
-   led.write(0,0,0);
-   delay(100);
-   digitalWrite(PIN_DEVLED, LOW); 
-
-   delay(100);
-   led.write(1,0,0);
-   delay(100);
-   led.write(0,1,0);
-   delay(100);
-   led.write(0,0,1);
-   delay(100);
-   
-   
+  
 }
