@@ -25,6 +25,15 @@
  *    void
  */
 void testStorage();
+
+/*
+ * Testa a comunicação com o AD7758
+ *  param
+ *    void
+ *  return
+ *    void
+ */
+void testAD7758();
  
 
 #endif

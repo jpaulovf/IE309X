@@ -30,7 +30,7 @@
 #define SSID_START_ADDR 0
 
 // Posição inicial do password na EEPROM
-#define PASS_START_ADDR 99
+#define PASS_START_ADDR 49
 
 /* ------------------------------------- *
  * Protótipos                            *
