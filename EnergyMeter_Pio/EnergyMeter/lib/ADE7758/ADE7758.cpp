@@ -114,7 +114,7 @@ float ADE7758Device::getRMSVoltage(uint8_t phase){
     // Bytes a serem lidos
     
 
-
+    return 0;
 
 
 }
@@ -123,6 +123,8 @@ float ADE7758Device::getRMSVoltage(uint8_t phase){
 // Ler corrente RMS
 // =====================================
 float ADE7758Device::getRMSCurrent(uint8_t phase){
+
+    return 0;
 
 }
 

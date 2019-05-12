@@ -33,7 +33,16 @@ void testStorage();
  *  return
  *    void
  */
-void testAD7758();
+void testADE7758();
+
+/*
+ * Testa a entrada de caracteres hexa
+ *  param
+ *    void
+ *  return
+ *    void
+ */
+void testHexInput();
  
 
 #endif

@@ -55,63 +55,231 @@ void testStorage(){
 /*
  * Testa a comunicação com o AD7758
  */
-void testAD7758(){
+void testADE7758(){
 
   ADE7758Device *ade = new ADE7758Device();
-  uint8_t reg_vrms[3];
-  uint8_t reg_mode[2];
-  uint32_t vrms = 0;
-  uint64_t vrms_m = 0;
-  uint16_t mode;
-  uint8_t ch2os = 0x27;
-  uint8_t vrmsos[2] = {0x00, 0x00};
-  uint8_t vrmsos_read[2];
+  uint8_t addr;
+  uint8_t size;
+  uint8_t operation = 0;
+  uint8_t data[10];
+  char inputBuffer[3];
+  char key;
+  uint32_t finalData;
 
-  for (int i=0; i<3; i++){
-    reg_vrms[i] = 0;
-  }
-
+  // Inicializando a serial
   Serial.begin(9600);
+  Serial.setTimeout(60000);
 
-  Serial.println("AD7758 Communication Test!");
+  // Limpando os buffers
+  for (int i=0; i<10; i++){
+    data[i] = 0;
+  }
+  for (int i=0; i<3; i++){
+    inputBuffer[i] = 0;
+  }
+  
+  // Loop para pegar dados do usuário
+  while (1){
 
-  // Lendo o reg MODE
-  Serial.println("Reading MODE...");
-  ade->readRegister(0x09, 2, reg_mode);
-  mode = reg_mode[0] << 8 | reg_mode[1];
-  Serial.print("Mode = ");
-  Serial.println(mode, HEX);
+    Serial.println("*** ENTER REGISTER PARAMETERS ***");
 
-  // Tentando corrigir o offset
-  Serial.println("Tryying to correct offset...");
-  ade->writeRegister(0x19, 2, vrmsos);
-  Serial.println("Tryying to correct offset...");
-  ade->writeRegister(0x0E, 1, &ch2os);
+    // Escolhendo a operação (R/W)
+    Serial.println("\nSelect operation: (W)rite, (R)ead");
+    Serial.readBytes(&key, 1);
+    if (key == 'w' || key == 'W'){
+      operation = 1;
+    }
+    else{
+      operation = 0;
+    }
+    Serial.print("You entered ");
+    if (operation == 1){
+      Serial.println("WRITE");
+    }
+    else{
+      Serial.println("READ");
+    }
 
-  ade->readRegister(0x19,2, vrmsos_read);
-  Serial.println(vrmsos_read[0], HEX);
-  Serial.println(vrmsos_read[1], HEX);
+    // Lendo o endereço do registrador
+    Serial.println("\nRegister address (hexa): ");
+    Serial.readBytesUntil('\n', (char *) inputBuffer, 2);
+    while (Serial.available()){
+      Serial.read();
+    }
+    inputBuffer[2] = 0;
+    addr = (uint8_t) strtol(inputBuffer, 0, 16);
+    Serial.print("You entered address 0x");
+    Serial.println(addr, HEX);
 
+    // Lendo o numero de bytes
+    for (int i=0; i<3; i++){
+      inputBuffer[i] = 0;
+    }
+    Serial.println("\nNumber of data bytes: ");
+    Serial.readBytesUntil('\n', (char *) inputBuffer, 2);
+    while (Serial.available()){
+      Serial.read();
+    }
+    inputBuffer[2] = 0;
+    size = (uint8_t) strtol(inputBuffer, 0, 10);
+    if (size > 10){
+      size = 10;
+    }
+    Serial.print("You entered ");
+    Serial.println(size);
 
-  Serial.println("Reading VRMS... 10 MEANS");
+    // Lendo os dados, caso escrita
+    if (operation == 1){
+      for (int i=0; i<10; i++){
+        data[i] = 0;
+      }
+      for (int i=0; i<3; i++){
+        inputBuffer[i] = 0;
+      }
+      for (int i=0; i<size; i++){
+        Serial.print("\nData[");
+        Serial.print(i);
+        Serial.println("] (hexa): ");
+        Serial.readBytesUntil('\n', (char *) inputBuffer, 2);
+        while (Serial.available()){
+          Serial.read();
+        }
+        inputBuffer[2] = 0;
+        data[i] = (uint8_t) strtol(inputBuffer, 0, 10);
+        Serial.print("You entered 0x");
+        Serial.println(data[i]);
+      }
+    }
 
-
-  for (int i=0; i<256; i++){
-    // Lendo VRMS
-    ade->readRegister(0x17, 3, reg_vrms);
-    // Juntando
-    vrms = reg_vrms[0] << 16 | reg_vrms[1] << 8 | reg_vrms[2];
-
-    vrms_m += (uint64_t) vrms;
+    // Iniciando operação
+    if (operation == 1){
+      Serial.println("---------------------------");
+      Serial.print("Writing ");
+      Serial.print(size);
+      Serial.print(" bytes on register 0x");
+      Serial.println(addr, HEX);
+      ade->writeRegister(addr, size, data);
+      Serial.println("DONE\n");
+    }
+    else{
+      Serial.println("---------------------------");
+      Serial.print("Reading ");
+      Serial.print(size);
+      Serial.print(" bytes from register 0x");
+      Serial.println(addr, HEX);
+      ade->readRegister(addr, size, data);
+      finalData = 0;
+      for (int i=0; i<size; i++){
+        finalData |= data[i]<<(8*(size-1-i));
+      }
+      Serial.print("Read value is: ");
+      Serial.print(finalData);
+      Serial.print(" (0x");
+      Serial.print(finalData, HEX);
+      Serial.println(")\n");
+    }
 
   }
+    
 
-  // Média
-  vrms = (uint32_t) (vrms_m >> 8);
 
-  // Printando
-  Serial.println("Register VRMS = ");
-  Serial.println((int) vrms);
+  // uint8_t reg_vrms[3];
+  // uint8_t reg_mode[2];
+  // uint32_t vrms = 0;
+  // uint64_t vrms_m = 0;
+  // uint16_t mode;
+  // uint8_t ch2os = 0x27;
+  // uint8_t vrmsos[2] = {0x00, 0x00};
+  // uint8_t vrmsos_read[2];
+
+  // for (int i=0; i<3; i++){
+  //   reg_vrms[i] = 0;
+  // }
+
+  // Serial.begin(9600);
+
+  // Serial.println("AD7758 Communication Test!");
+
+  // // Lendo o reg MODE
+  // Serial.println("Reading MODE...");
+  // ade->readRegister(0x09, 2, reg_mode);
+  // mode = reg_mode[0] << 8 | reg_mode[1];
+  // Serial.print("Mode = ");
+  // Serial.println(mode, HEX);
+
+  // // Tentando corrigir o offset
+  // Serial.println("Tryying to correct offset...");
+  // ade->writeRegister(0x19, 2, vrmsos);
+  // Serial.println("Tryying to correct offset...");
+  // ade->writeRegister(0x0E, 1, &ch2os);
+
+  // ade->readRegister(0x19,2, vrmsos_read);
+  // Serial.println(vrmsos_read[0], HEX);
+  // Serial.println(vrmsos_read[1], HEX);
+
+
+  // Serial.println("Reading VRMS... 10 MEANS");
+
+
+  // for (int i=0; i<256; i++){
+  //   // Lendo VRMS
+  //   ade->readRegister(0x17, 3, reg_vrms);
+  //   // Juntando
+  //   vrms = reg_vrms[0] << 16 | reg_vrms[1] << 8 | reg_vrms[2];
+
+  //   vrms_m += (uint64_t) vrms;
+
+  // }
+
+  // // Média
+  // vrms = (uint32_t) (vrms_m >> 8);
+
+  // // Printando
+  // Serial.println("Register VRMS = ");
+  // Serial.println((int) vrms);
   
+}
+
+
+/*
+ * Testa a entrada de caracteres hexa
+ */
+void testHexInput(){
+
+  char buf[3];
+  uint8_t hex_val; 
+
+  // Inicializando a serial
+  Serial.begin(9600);
+  Serial.setTimeout(60000);
+
+  // Limpando buffer
+  buf[0] = 0;
+  buf[1] = 0;
+  buf[2] = 0;
+
+  while (1){
+    Serial.println("Enter hex:");
+    Serial.readBytesUntil('\n', (char *) buf, 2);
+    
+    // Flusheando o buffer
+    while (Serial.available()){
+      Serial.read();
+    }
+
+    buf[2] = 0;
+
+    hex_val = (uint8_t) strtol(buf, 0, 16);
+
+    Serial.print("You entered: ");
+    Serial.println(buf);
+
+    Serial.print("Number value is ");
+    Serial.print(hex_val);
+    Serial.print(" (");
+    Serial.print(hex_val, HEX);
+    Serial.println(")\n");
+  }
+
 }
  
