@@ -32,6 +32,8 @@ Este repositório, até o momento, possui os seguintes diretórios:
 - **Projeto**: Diretório com arquivos do projeto.
     - **Schematics**: Esquemáticos do projeto eletrônico.
     - **Firmware**: Diagramas do projeto do firmware.
+- **EnergyMeter_Pio**: Projeto migrado para o PlatformIO IDE.
+		- **EnergyMeter**: Código fonte do projeto migrado.
 
 ## Detalhamento
 
@@ -68,11 +70,11 @@ Fonte: [Baú da Eletrônica](http://www.baudaeletronica.com.br)
 |                       | S1&nbsp;S2&nbsp;S3&nbsp;S4 | S1&nbsp;S2&nbsp;S3&nbsp;S4 | S1&nbsp;S2&nbsp;S3&nbsp;S4 | S1&nbsp;S2&nbsp;S3&nbsp;S4 |
 | Estudo preliminar     | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;|             |             |             |
 | Hardware: esquemático |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| O&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
-| Hardware: PCB         |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
-| Firmware              |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
-| Aplicação             |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
+| Hardware: PCB         |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
+| Firmware              |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
+| Aplicação             |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
 | Integração            |             |             |&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; #&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;      |
-| Testes unitários      |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|
+| Testes unitários      |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|
 | Testes finais         |             |             |             | #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|
 
 ---
@@ -84,4 +86,4 @@ X : Executado
 O : Finalizado
 
 --- 
-*Última atualização* : 10/05/2019 por [jpaulovf](http://github.com/jpaulovf)
+

@@ -1,6 +1,6 @@
 {
     "terminal.integrated.env.linux": {
-        "PATH": "/home/joao/.platformio/penv/bin:/home/joao/.platformio/penv:/home/joao/.cargo/bin:/home/joao/bin:/home/joao/.local/bin:/home/joao/.cargo/bin:/home/joao/bin:/home/joao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "PATH": "/l/disk0/jpaulo/.platformio/penv/bin:/l/disk0/jpaulo/.platformio/penv:/l/disk0/jpaulo/esp/xtensa-esp32-elf/bin:/l/disk0/jpaulo/.cargo/bin:/l/disk0/jpaulo/bin:/l/disk0/jpaulo/.local/bin:/l/disk0/jpaulo/esp/xtensa-esp32-elf/bin:/l/disk0/jpaulo/.cargo/bin:/l/disk0/jpaulo/bin:/l/disk0/jpaulo/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/opt/puppetlabs/bin",
         "PLATFORMIO_CALLER": "vscode"
     }
 }
