@@ -43,6 +43,14 @@ void testADE7758();
  *    void
  */
 void testHexInput();
- 
+
+/*
+ * Testa a medição de VRMS com interrupção de ZX
+ *  param
+ *      void
+ *  return
+ *      void 
+ */
+void testVRMS(); 
 
 #endif

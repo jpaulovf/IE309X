@@ -13,6 +13,12 @@
 #include <stdint.h>
 
 /* ------------------------------------- *
+ * Globais                               *
+ * ------------------------------------- */
+volatile uint8_t irqflag = 0;
+
+
+/* ------------------------------------- *
  * Funções                               *
  * ------------------------------------- */
 
@@ -69,6 +75,7 @@ void testADE7758(){
   // Inicializando a serial
   Serial.begin(9600);
   Serial.setTimeout(60000);
+
 
   // Limpando os buffers
   for (int i=0; i<10; i++){
@@ -145,9 +152,9 @@ void testADE7758(){
           Serial.read();
         }
         inputBuffer[2] = 0;
-        data[i] = (uint8_t) strtol(inputBuffer, 0, 10);
+        data[i] = (uint8_t) strtol(inputBuffer, 0, 16);
         Serial.print("You entered 0x");
-        Serial.println(data[i]);
+        Serial.println(data[i], HEX);
       }
     }
 
@@ -279,6 +286,66 @@ void testHexInput(){
     Serial.print(" (");
     Serial.print(hex_val, HEX);
     Serial.println(")\n");
+  }
+
+}
+
+void IRAM_ATTR IRQHandler(){
+
+  irqflag = 1;
+
+}
+
+/*
+ * Testa a medição de VRMS com interrupção de ZX
+ */
+void testVRMS(){
+
+  ADE7758Device *ade = new ADE7758Device();
+  const byte interruptPin = 39; //14
+  uint8_t data[2];
+  uint8_t vrms_data[3];
+  uint32_t vrms;
+
+  Serial.begin(9600);
+  pinMode(interruptPin, INPUT_PULLUP);
+
+  // Configurando os registradores
+  Serial.println("Configuring registers...");
+
+  // Registrador MODE
+  data[0] = 0x60;
+  data[1] = 0x0C;
+  ade->writeRegister(0x09, 2, data);
+
+  // Registrador INTERRUPT ENABLE
+  data[0] = 0x00;
+  data[1] = 0x10;
+  ade->writeRegister(0x0A, 2, data);
+
+  attachInterrupt(digitalPinToInterrupt(interruptPin), IRQHandler, FALLING);
+
+  while (1){
+
+    if (irqflag == 1){
+
+      Serial.println("Interrupt detected. Reading VRMS...");
+
+      ade->readRegister(0x17, 3, vrms_data);
+      vrms = ((uint32_t) vrms_data[0]) << 16 |
+             ((uint32_t) vrms_data[1]) << 8 |
+             ((uint32_t) vrms_data[2]);
+
+      Serial.print("VRMS = ");
+      Serial.print(vrms);
+      Serial.print(" (0x");
+      Serial.print(vrms, HEX);
+      Serial.println(")");
+
+      ade->readRegister(0x0C, 2, data); 
+
+    }
+
   }
 
 }

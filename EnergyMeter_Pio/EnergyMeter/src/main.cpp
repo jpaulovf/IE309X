@@ -77,7 +77,8 @@ void setup() {
 
     // testStorage();
     // testHexInput();
-    testADE7758();
+    //testADE7758();
+    testVRMS();
   
 }
 
