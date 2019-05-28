@@ -11,6 +11,7 @@
 #include <DataStorage.h>
 #include <ADE7758.h>
 #include <stdint.h>
+#include <RGBLed.h>
 
 /* ------------------------------------- *
  * Globais                               *
@@ -18,9 +19,32 @@
 volatile uint8_t irqflag = 0;
 
 
+
 /* ------------------------------------- *
  * Funções                               *
  * ------------------------------------- */
+
+/*
+ * Testa o LED RGB
+ */
+void testRGBLed(){
+
+  RGBLed *myled = new RGBLed(PIN_LED_R, PIN_LED_G, PIN_LED_B);
+  myled->write(0, 0, 0);  // Off
+
+  while (1){
+
+    myled->write(1, 0, 0);  // Red
+    delay(500);
+    myled->write(0, 1, 0);  // Green
+    delay(500);
+    myled->write(0, 0, 1);  // Blue
+    delay(500);
+
+  }
+
+
+}
 
 
 /*
@@ -187,111 +211,15 @@ void testADE7758(){
     }
 
   }
-    
-
-
-  // uint8_t reg_vrms[3];
-  // uint8_t reg_mode[2];
-  // uint32_t vrms = 0;
-  // uint64_t vrms_m = 0;
-  // uint16_t mode;
-  // uint8_t ch2os = 0x27;
-  // uint8_t vrmsos[2] = {0x00, 0x00};
-  // uint8_t vrmsos_read[2];
-
-  // for (int i=0; i<3; i++){
-  //   reg_vrms[i] = 0;
-  // }
-
-  // Serial.begin(9600);
-
-  // Serial.println("AD7758 Communication Test!");
-
-  // // Lendo o reg MODE
-  // Serial.println("Reading MODE...");
-  // ade->readRegister(0x09, 2, reg_mode);
-  // mode = reg_mode[0] << 8 | reg_mode[1];
-  // Serial.print("Mode = ");
-  // Serial.println(mode, HEX);
-
-  // // Tentando corrigir o offset
-  // Serial.println("Tryying to correct offset...");
-  // ade->writeRegister(0x19, 2, vrmsos);
-  // Serial.println("Tryying to correct offset...");
-  // ade->writeRegister(0x0E, 1, &ch2os);
-
-  // ade->readRegister(0x19,2, vrmsos_read);
-  // Serial.println(vrmsos_read[0], HEX);
-  // Serial.println(vrmsos_read[1], HEX);
-
-
-  // Serial.println("Reading VRMS... 10 MEANS");
-
-
-  // for (int i=0; i<256; i++){
-  //   // Lendo VRMS
-  //   ade->readRegister(0x17, 3, reg_vrms);
-  //   // Juntando
-  //   vrms = reg_vrms[0] << 16 | reg_vrms[1] << 8 | reg_vrms[2];
-
-  //   vrms_m += (uint64_t) vrms;
-
-  // }
-
-  // // Média
-  // vrms = (uint32_t) (vrms_m >> 8);
-
-  // // Printando
-  // Serial.println("Register VRMS = ");
-  // Serial.println((int) vrms);
   
 }
 
-
 /*
- * Testa a entrada de caracteres hexa
- */
-void testHexInput(){
-
-  char buf[3];
-  uint8_t hex_val; 
-
-  // Inicializando a serial
-  Serial.begin(9600);
-  Serial.setTimeout(60000);
-
-  // Limpando buffer
-  buf[0] = 0;
-  buf[1] = 0;
-  buf[2] = 0;
-
-  while (1){
-    Serial.println("Enter hex:");
-    Serial.readBytesUntil('\n', (char *) buf, 2);
-    
-    // Flusheando o buffer
-    while (Serial.available()){
-      Serial.read();
-    }
-
-    buf[2] = 0;
-
-    hex_val = (uint8_t) strtol(buf, 0, 16);
-
-    Serial.print("You entered: ");
-    Serial.println(buf);
-
-    Serial.print("Number value is ");
-    Serial.print(hex_val);
-    Serial.print(" (");
-    Serial.print(hex_val, HEX);
-    Serial.println(")\n");
-  }
-
-}
-
+ *  Interrupção de Zero-Crossing
+ */ 
 void IRAM_ATTR IRQHandler(){
 
+  digitalWrite(DEBUG_LED, !digitalRead(DEBUG_LED));
   irqflag = 1;
 
 }
@@ -302,13 +230,17 @@ void IRAM_ATTR IRQHandler(){
 void testVRMS(){
 
   ADE7758Device *ade = new ADE7758Device();
-  const byte interruptPin = 39; //14
+  const byte interruptPin = 34; //14
   uint8_t data[2];
   uint8_t vrms_data[3];
   uint32_t vrms;
+  uint32_t meas_counter = 0;
+  uint64_t vrms_mean = 0;
 
   Serial.begin(9600);
-  pinMode(interruptPin, INPUT_PULLUP);
+  pinMode(interruptPin, INPUT);
+  pinMode(DEBUG_LED, OUTPUT);
+  digitalWrite(DEBUG_LED, HIGH);
 
   // Configurando os registradores
   Serial.println("Configuring registers...");
@@ -323,28 +255,102 @@ void testVRMS(){
   data[1] = 0x10;
   ade->writeRegister(0x0A, 2, data);
 
+  // Registrador de correção de offset VRMS
+  data[0] = 0x00;
+  data[1] = 0x00;
+  ade->writeRegister(0x19, 2, data);
+
+  // Lendo os registradores pra ver se tá certo
+  ade->readRegister(0x09, 2, data);
+  Serial.print("MODE = 0x");
+  Serial.print(data[0], HEX);
+  Serial.println(data[1], HEX);
+
+  ade->readRegister(0x0B, 2, data);
+  Serial.print("Interrupt Status = 0x");
+  Serial.print(data[0], HEX);
+  Serial.println(data[1], HEX);
+
+  // Resetando flags
+  ade->readRegister(0x0C, 2, data);
+
   attachInterrupt(digitalPinToInterrupt(interruptPin), IRQHandler, FALLING);
 
   while (1){
 
     if (irqflag == 1){
 
-      Serial.println("Interrupt detected. Reading VRMS...");
+      //Serial.println("Interrupt detected. Reading VRMS...");
 
       ade->readRegister(0x17, 3, vrms_data);
       vrms = ((uint32_t) vrms_data[0]) << 16 |
              ((uint32_t) vrms_data[1]) << 8 |
              ((uint32_t) vrms_data[2]);
 
+      /*
       Serial.print("VRMS = ");
       Serial.print(vrms);
       Serial.print(" (0x");
       Serial.print(vrms, HEX);
       Serial.println(")");
+      */
 
+      meas_counter++;
+      vrms_mean += vrms;
+
+      if (meas_counter == 256){
+        meas_counter = 0;
+        vrms = (uint32_t) (vrms_mean >> 8);
+        vrms_mean = 0;
+        Serial.print("VRMS = ");
+        Serial.print(vrms);
+        Serial.print(" (0x");
+        Serial.print(vrms, HEX);
+        Serial.println(")");
+      }
+
+      // Resetando o registrador de flags 
       ade->readRegister(0x0C, 2, data); 
 
     }
+
+  }
+
+}
+
+/*
+ *  Calibra o offset de tensão
+ */
+void voltCal(){
+
+  ADE7758Device *ade = new ADE7758Device();
+  uint8_t data[2];
+  uint8_t wfm_data[3];  // Registrador WAVEFORM
+  uint32_t volt;
+
+  Serial.begin(9600);
+
+  // Configurando o MODE
+  data[0] = 0x60;
+  data[1] = 0x0C;
+  ade->writeRegister(0x09, 2, data);
+
+  // Configurando o offset CH2OS
+  data[0] = 0x00;
+  ade->writeRegister(0x0E, 1, &data[0]);
+
+  // Lendo o WAVEFORM em loop
+  while (1){
+    ade->readRegister(0x01, 3, wfm_data);
+    volt = ((uint32_t) wfm_data[0]) << 16 |
+           ((uint32_t) wfm_data[1]) << 8  |
+           ((uint32_t) wfm_data[2]);
+    Serial.print("Volt = ");
+    Serial.print(volt);
+    Serial.print(" (0x");
+    Serial.print(volt, HEX);
+    Serial.println(")");
+
 
   }
 

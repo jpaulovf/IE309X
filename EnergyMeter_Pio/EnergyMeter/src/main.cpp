@@ -55,9 +55,9 @@
 #define PIN_IRQ     39  // IRQ no pino GPIO39 (input)
 #define PIN_APCF    34  //  
 #define PIN_VACPF   35  // 
-#define PIN_LED_R   32  // LED RBG
-#define PIN_LED_G   25  // LED RGB
-#define PIN_LED_B   33  // LED RGB
+//#define PIN_LED_R   32  // LED RBG
+//#define PIN_LED_G   33  // LED RGB
+//#define PIN_LED_B   25  // LED RGB
 #define PIN_SCLK    14  // SPI Clock
 #define PIN_DOUT    12  // SPI data out
 #define PIN_DIN     13  // SPI data in
@@ -78,7 +78,9 @@ void setup() {
     // testStorage();
     // testHexInput();
     //testADE7758();
-    testVRMS();
+    //testVRMS();
+    //voltCal();
+    testRGBLed();
   
 }
 

@@ -13,9 +13,23 @@
  * Defines                               *
  * ------------------------------------- */
 
+#define DEBUG_LED 2
+#define PIN_LED_R   25  // LED RGB
+#define PIN_LED_G   32  // LED RGB
+#define PIN_LED_B   33  // LED RGB
+
 /* ------------------------------------- *
  * Protótipos                            *
  * ------------------------------------- */
+
+/*
+ * Testa o LED RGB
+ *  param
+ *    void
+ *  return
+ *    void
+ */
+void testRGBLed();
 
 /*
  * Testa o armazenamento na EEPROM
@@ -36,15 +50,6 @@ void testStorage();
 void testADE7758();
 
 /*
- * Testa a entrada de caracteres hexa
- *  param
- *    void
- *  return
- *    void
- */
-void testHexInput();
-
-/*
  * Testa a medição de VRMS com interrupção de ZX
  *  param
  *      void
@@ -52,5 +57,14 @@ void testHexInput();
  *      void 
  */
 void testVRMS(); 
+
+/*
+ *  Calibra o offset de tensão
+ *  param
+ *      void
+ *  return
+ *      void
+ */ 
+void voltCal();
 
 #endif
