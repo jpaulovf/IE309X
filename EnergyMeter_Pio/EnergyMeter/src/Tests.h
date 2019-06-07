@@ -14,9 +14,9 @@
  * ------------------------------------- */
 
 #define DEBUG_LED 2
-#define PIN_LED_R   25  // LED RGB
-#define PIN_LED_G   32  // LED RGB
-#define PIN_LED_B   33  // LED RGB
+#define PIN_LED_R   32 //25  // LED RGB
+#define PIN_LED_G   25 //32 // LED RGB
+#define PIN_LED_B   33 //33 // LED RGB
 
 /* ------------------------------------- *
  * Protótipos                            *
@@ -59,12 +59,15 @@ void testADE7758();
 void testVRMS(); 
 
 /*
- *  Calibra o offset de tensão
+ *  Calibra a constante de W.h
  *  param
  *      void
  *  return
  *      void
  */ 
-void voltCal();
+void whCal();
+
+/* Testa se a placa está viva */
+void checkIfAlive();
 
 #endif

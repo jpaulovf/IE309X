@@ -46,7 +46,6 @@ void testRGBLed(){
 
 }
 
-
 /*
  * Testa o armazenamento na EEPROM
  */
@@ -230,7 +229,7 @@ void IRAM_ATTR IRQHandler(){
 void testVRMS(){
 
   ADE7758Device *ade = new ADE7758Device();
-  const byte interruptPin = 34; //14
+  const byte interruptPin = 39; //14
   uint8_t data[2];
   uint8_t vrms_data[3];
   uint32_t vrms;
@@ -238,7 +237,7 @@ void testVRMS(){
   uint64_t vrms_mean = 0;
 
   Serial.begin(9600);
-  pinMode(interruptPin, INPUT);
+  pinMode(39, INPUT);
   pinMode(DEBUG_LED, OUTPUT);
   digitalWrite(DEBUG_LED, HIGH);
 
@@ -318,41 +317,151 @@ void testVRMS(){
 
 }
 
+
 /*
- *  Calibra o offset de tensão
+ *  Calibra a constante de W.h
  */
-void voltCal(){
+
+void IRAM_ATTR IRQHandler2(){
+
+  digitalWrite(DEBUG_LED, !digitalRead(DEBUG_LED));
+  irqflag = 1;
+
+}
+  
+void whCal(){
 
   ADE7758Device *ade = new ADE7758Device();
-  uint8_t data[2];
-  uint8_t wfm_data[3];  // Registrador WAVEFORM
-  uint32_t volt;
+  const byte interruptPin = 39;
+  uint8_t data8;
+  uint16_t data16;
+  uint32_t data24;
+  uint16_t awh, bwh, cwh;
 
   Serial.begin(9600);
+  pinMode(interruptPin, INPUT);
+  pinMode(DEBUG_LED, OUTPUT);
+  digitalWrite(DEBUG_LED, LOW);
+  Serial.println("CALIBRATION!");
 
-  // Configurando o MODE
-  data[0] = 0x60;
-  data[1] = 0x0C;
-  ade->writeRegister(0x09, 2, data);
+  // Atribuindo a interrupção
+  attachInterrupt(digitalPinToInterrupt(interruptPin), IRQHandler2, FALLING);
 
-  // Configurando o offset CH2OS
-  data[0] = 0x00;
-  ade->writeRegister(0x0E, 1, &data[0]);
+    // Configurando WAVFORM
+  data8 = 0x08;
+  ade->write8(REG_WAVEFORM, data8);
+  data8 = ade->read8(REG_WAVEFORM);
+  Serial.print("WAVEFORM = 0x");
+  Serial.println(data8, HEX);
 
-  // Lendo o WAVEFORM em loop
-  while (1){
-    ade->readRegister(0x01, 3, wfm_data);
-    volt = ((uint32_t) wfm_data[0]) << 16 |
-           ((uint32_t) wfm_data[1]) << 8  |
-           ((uint32_t) wfm_data[2]);
-    Serial.print("Volt = ");
-    Serial.print(volt);
-    Serial.print(" (0x");
-    Serial.print(volt, HEX);
-    Serial.println(")");
+  // Escrevendo ACPFNUM (16) e ACPFDEN (16)
+  data16 = 0x0000;
+ 
+  ade->write16(REG_APCFDEN, data16);
+  data16 = ade->read16(REG_APCFDEN);
+  Serial.print("APCFDEN = 0x");
+  Serial.println(data16, HEX);
 
+  ade->write16(REG_APCFNUM, data16);
+  data16 = ade->read16(REG_APCFNUM);
+  Serial.print("APCFNUM = 0x");
+  Serial.println(data16, HEX);
+
+  // Limpando os xWG (16)
+  data16 = 0x0000;
+  
+  ade->write16(REG_AWG, data16);
+  data16 = ade->read16(REG_AWG);
+  Serial.print("AWG = 0x");
+  Serial.println(data16, HEX);
+
+  ade->write16(REG_BWG, data16);
+  data16 = ade->read16(REG_BWG);
+  Serial.print("BWG = 0x");
+  Serial.println(data16, HEX);
+
+  ade->write16(REG_CWG, data16);
+  data16 = ade->read16(REG_CWG);
+  Serial.print("CWG = 0x");
+  Serial.println(data16, HEX);
+
+  // Selecionar a fase no MMODE (8)
+
+  data8 = 0xFC; // Fase A
+  //data8 = 0x01; // Fase B
+  //data8 = 0x02; // Fase C
+  ade->write8(REG_MMODE, data8);
+  data8 = ade->read8(REG_MMODE);
+  Serial.print("MMODE = 0x");
+  Serial.println(data8, HEX);
+
+  // Configurar o LCYCMODE (8)
+  data8 = 0x09;
+  ade->write8(REG_LCYCMODE, data8);
+  data8 = ade->read8(REG_LCYCMODE);
+  Serial.print("LCYCMODE = 0x");
+  Serial.println(data8, HEX);
+
+  // Configurar o LINECYC (16) para 60 ciclos
+  data16 = 0x0010;
+  ade->write16(REG_LINECYC, data16);
+  data16 = ade->read16(REG_LINECYC);
+  Serial.print("LINECYC = 0x");
+  Serial.println(data16, HEX);
+
+  // Configurar a máscara de interrupções (24) para pegar LENERGY
+  data24 = 0x001000;
+  ade->write24(REG_MASK, data24);
+  data24 = ade->read24(REG_MASK);
+  Serial.print("MASK = 0x");
+  Serial.println(data24, HEX);
+
+  while(1){
+
+    irqflag = 0;
+
+    // Resetando o status de interrupção (ler RSTATUS (24))
+    ade->read24(REG_RSTATUS);
+
+    // Esperando a interrupção
+    while (irqflag == 0);
+    //delay(2000);
+
+    // Lendo o registrador de watt.h (16) da fase
+    awh = ade->read16(REG_AWATTHR);  // Fase A
+    bwh = ade->read16(REG_BWATTHR);  // Fase B
+    cwh = ade->read16(REG_CWATTHR);  // Fase C
+
+    // Printando
+    Serial.println("-------------------");
+    Serial.print("AWATTHR = 0x");
+    Serial.println(awh, HEX);
+    Serial.print("BWATTHR = 0x");
+    Serial.println(bwh, HEX);
+    Serial.print("CWATTHR = 0x");
+    Serial.println(cwh, HEX);
+    Serial.println("-------------------");
+
+    delay(500);
 
   }
 
 }
- 
+
+// Testa se a placa está viva
+void checkIfAlive(){
+
+  pinMode(DEBUG_LED, OUTPUT);
+  Serial.begin(9600);
+
+  while(1){
+
+    digitalWrite(DEBUG_LED, !digitalRead(DEBUG_LED));
+
+    Serial.println("I AM ALIVE!");
+
+    delay(500);
+
+  }
+
+}

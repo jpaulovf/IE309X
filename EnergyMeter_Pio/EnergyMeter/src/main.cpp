@@ -79,9 +79,10 @@ void setup() {
     // testHexInput();
     //testADE7758();
     //testVRMS();
-    //voltCal();
-    testRGBLed();
-  
+    //testRGBLed();
+    whCal();
+
+   // checkIfAlive();
 }
 
 void loop() {

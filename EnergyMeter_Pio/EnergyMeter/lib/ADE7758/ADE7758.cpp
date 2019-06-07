@@ -24,7 +24,7 @@
 
 
 /* ------------------------------------- *
- * Métodos private                       *
+ * Métodos                               *
  * ------------------------------------- */
 
 // =====================================
@@ -77,9 +77,98 @@ void ADE7758Device::readRegister(uint8_t addr,
     hspi->endTransaction();
 }
 
-/* ------------------------------------- *
- * Métodos public                        *
- * ------------------------------------- */
+// =====================================
+// Escreve em um registrador de 8 bits
+// =====================================
+void ADE7758Device::write8(uint8_t addr, uint8_t data){
+
+    uint8_t data8;
+
+    data8 = data;
+
+    writeRegister(addr, 1, &data8);
+
+}
+
+// =====================================
+// Escreve em um registrador de 16 bits
+// =====================================
+void ADE7758Device::write16(uint8_t addr, uint16_t data){
+
+    uint8_t data16[2];
+
+    data16[0] = (uint8_t) ((data & 0xFF00) >> 8);
+    data16[1] = (uint8_t) ((data & 0x00FF) >> 0);
+
+    writeRegister(addr, 2, data16);
+
+}
+
+// =====================================
+// Escreve em um registrador de 24 bits
+// =====================================
+void ADE7758Device::write24(uint8_t addr, uint32_t data){
+
+    uint8_t data24[3];
+
+    data24[0] = (uint8_t) ((data & 0x00FF0000) >> 16);
+    data24[1] = (uint8_t) ((data & 0x0000FF00) >> 8);
+    data24[2] = (uint8_t) ((data & 0x000000FF) >> 0);
+
+    writeRegister(addr, 3, data24);
+
+}
+
+// =====================================
+// Lê um registrador de 8 bits
+// =====================================
+uint8_t ADE7758Device::read8(uint8_t addr){
+
+    uint8_t regvalue;
+    uint8_t data8;
+
+    readRegister(addr, 1, &data8);
+
+    regvalue = data8;
+
+    return regvalue;
+
+}
+
+// =====================================
+// Lê um registrador de 16 bits
+// =====================================
+uint16_t ADE7758Device::read16(uint8_t addr){
+
+    uint16_t regvalue;
+    uint8_t data16[2];
+
+    readRegister(addr, 2, data16);
+
+    regvalue = ((uint16_t) data16[0]) << 8 |
+               ((uint16_t) data16[1]) << 0; 
+
+    return regvalue;
+
+}
+
+// =====================================
+// Lê um registrador de 24 bits
+// =====================================
+uint32_t ADE7758Device::read24(uint8_t addr){
+
+    uint32_t regvalue;
+    uint8_t data24[3];
+
+    readRegister(addr, 3, data24);
+
+    regvalue = ((uint32_t) data24[0]) << 16 |
+               ((uint32_t) data24[1]) << 8 |
+               ((uint32_t) data24[2]) << 0;
+
+    return regvalue;
+
+}
 
 // =====================================
 // Construtor
@@ -103,28 +192,6 @@ ADE7758Device::ADE7758Device(uint8_t pin_reset,
     pinMode(pin_reset, LOW);
 
     // Inserir aqui rotinas de inicialização do ADE7758
-
-}
-
-// =====================================
-// Ler tensão RMS
-// =====================================
-float ADE7758Device::getRMSVoltage(uint8_t phase){
-
-    // Bytes a serem lidos
-    
-
-    return 0;
-
-
-}
-
-// =====================================
-// Ler corrente RMS
-// =====================================
-float ADE7758Device::getRMSCurrent(uint8_t phase){
-
-    return 0;
 
 }
 
