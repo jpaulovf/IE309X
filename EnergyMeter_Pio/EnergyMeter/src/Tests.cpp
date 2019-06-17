@@ -13,6 +13,13 @@
 #include <stdint.h>
 #include <RGBLed.h>
 
+#include <BlynkSimpleEsp32.h>
+#include <WiFi.h>
+#include <WiFiClient.h>
+
+#include <cstdlib>
+#include <ctime>
+
 /* ------------------------------------- *
  * Globais                               *
  * ------------------------------------- */
@@ -246,7 +253,6 @@ void testVRMS(){
 
   // Registrador MODE
   data[0] = 0x60;
-  data[1] = 0x0C;
   ade->writeRegister(0x09, 2, data);
 
   // Registrador INTERRUPT ENABLE
@@ -332,27 +338,39 @@ void IRAM_ATTR IRQHandler2(){
 void whCal(){
 
   ADE7758Device *ade = new ADE7758Device();
-  const byte interruptPin = 39;
+  //const byte interruptPin = 39;
   uint8_t data8;
   uint16_t data16;
   uint32_t data24;
   uint16_t awh, bwh, cwh;
+  float f_awh, f_bwh, f_cwh;
+  float testwh = 0;
+
+  //const float whlsb = 0.000521;
+  //const float whlsb = 0.000058;
+  const float whlsb = 0.000172;
 
   Serial.begin(9600);
-  pinMode(interruptPin, INPUT);
+  pinMode(26, INPUT);
   pinMode(DEBUG_LED, OUTPUT);
   digitalWrite(DEBUG_LED, LOW);
   Serial.println("CALIBRATION!");
 
   // Atribuindo a interrupção
-  attachInterrupt(digitalPinToInterrupt(interruptPin), IRQHandler2, FALLING);
+  attachInterrupt(digitalPinToInterrupt(26), IRQHandler2, FALLING);
+
+  // Teste
+  data16 = ade->read16(0x48);
+  Serial.print("VARCFDEN = 0x");
+  Serial.println(data16, HEX);
+
 
     // Configurando WAVFORM
-  data8 = 0x08;
-  ade->write8(REG_WAVEFORM, data8);
-  data8 = ade->read8(REG_WAVEFORM);
-  Serial.print("WAVEFORM = 0x");
-  Serial.println(data8, HEX);
+  //data8 = 0x04;
+  //ade->write8(REG_WAVEFORM, data8);
+  //data8 = ade->read8(REG_WAVEFORM);
+  //Serial.print("WAVEFORM = 0x");
+  //Serial.println(data8, HEX);
 
   // Escrevendo ACPFNUM (16) e ACPFDEN (16)
   data16 = 0x0000;
@@ -403,7 +421,7 @@ void whCal(){
   Serial.println(data8, HEX);
 
   // Configurar o LINECYC (16) para 60 ciclos
-  data16 = 0x0010;
+  data16 = 0x01F4;
   ade->write16(REG_LINECYC, data16);
   data16 = ade->read16(REG_LINECYC);
   Serial.print("LINECYC = 0x");
@@ -418,13 +436,16 @@ void whCal(){
 
   while(1){
 
-    irqflag = 0;
+    //irqflag = 0;
 
     // Resetando o status de interrupção (ler RSTATUS (24))
+    //delay(100);
     ade->read24(REG_RSTATUS);
+    
 
     // Esperando a interrupção
     while (irqflag == 0);
+    irqflag = 0;
     //delay(2000);
 
     // Lendo o registrador de watt.h (16) da fase
@@ -432,17 +453,40 @@ void whCal(){
     bwh = ade->read16(REG_BWATTHR);  // Fase B
     cwh = ade->read16(REG_CWATTHR);  // Fase C
 
+    f_awh = ((float) awh)*whlsb;
+    f_bwh = ((float) bwh)*whlsb;
+    f_cwh = ((float) cwh)*whlsb;
+
+    testwh += f_awh;
+
     // Printando
     Serial.println("-------------------");
+
     Serial.print("AWATTHR = 0x");
-    Serial.println(awh, HEX);
+    Serial.print(awh, HEX);
+    Serial.print(" (");
+    Serial.print(f_awh);
+    Serial.println(" Wh)");
+
     Serial.print("BWATTHR = 0x");
-    Serial.println(bwh, HEX);
+    Serial.print(bwh, HEX);
+    Serial.print(" (");
+    Serial.print(f_bwh);
+    Serial.println(" Wh)");
+
     Serial.print("CWATTHR = 0x");
-    Serial.println(cwh, HEX);
+    Serial.print(cwh, HEX);
+    Serial.print(" (");
+    Serial.print(f_cwh);
+    Serial.println(" Wh)");
+
+    Serial.print("Accumulated = ");
+    Serial.print(testwh);
+    Serial.println(" Wh");
+
     Serial.println("-------------------");
 
-    delay(500);
+    //delay(500);
 
   }
 
@@ -463,5 +507,43 @@ void checkIfAlive(){
     delay(500);
 
   }
+
+}
+
+// Testa o Blynk
+
+void timerEvent(){
+
+  uint16_t number;
+
+  srand(time(NULL));
+
+  number = rand() % 10 + 1;
+
+  Blynk.virtualWrite(V0, number);
+
+}
+
+void testBlynk(){
+
+  char auth[] = "a4079471987f4abd9c2a25ad8543e485";
+  char ssid[] = "AndroidAPDBD3";
+  char pass[] = "rdow3020";
+
+  BlynkTimer timer;
+
+  Serial.begin(9600);
+
+  Blynk.begin(auth, ssid, pass);
+
+  timer.setInterval(1000, timerEvent);
+
+  while(1){
+
+    Blynk.run();
+    timer.run();
+
+  }
+
 
 }

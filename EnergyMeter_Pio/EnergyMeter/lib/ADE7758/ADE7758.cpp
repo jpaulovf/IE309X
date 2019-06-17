@@ -35,7 +35,7 @@ void ADE7758Device::writeRegister(uint8_t addr,
                                   uint8_t *data){
 
     // Iniciando comunicação SPI
-    hspi->beginTransaction(SPISettings(SPICLK_HZ, MSBFIRST, SPI_MODE1));
+    hspi->beginTransaction(SPISettings(SPICLK_HZ, MSBFIRST, SPI_MODE2));
     // Colocando o chip select em LOW
     digitalWrite(pin_cs, LOW);
     // Mandando o endereço
@@ -60,7 +60,7 @@ void ADE7758Device::readRegister(uint8_t addr,
                                  uint8_t dataSize, 
                                  uint8_t *data){
                                          // Iniciando comunicação SPI
-    hspi->beginTransaction(SPISettings(SPICLK_HZ, MSBFIRST, SPI_MODE1));
+    hspi->beginTransaction(SPISettings(SPICLK_HZ, MSBFIRST, SPI_MODE2));
     // Colocando o chip select em LOW
     digitalWrite(pin_cs, LOW);
     // Mandando o endereço

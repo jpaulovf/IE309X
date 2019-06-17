@@ -19,8 +19,7 @@
 
     unsigned int bufsize;
     int i;
-    int c;
-
+    
     // Checando tamanho
     if (size > BUFMAX){
       bufsize = BUFMAX;

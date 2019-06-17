@@ -70,4 +70,13 @@ void whCal();
 /* Testa se a placa está viva */
 void checkIfAlive();
 
+/*
+ *  Testa a comunicação com a plataforma Blynk
+ *  param
+ *      void
+ *  return
+ *      void
+ */ 
+void testBlynk();
+
 #endif

@@ -80,7 +80,9 @@ void setup() {
     //testADE7758();
     //testVRMS();
     //testRGBLed();
-    whCal();
+    //whCal();
+
+    testBlynk();
 
    // checkIfAlive();
 }
