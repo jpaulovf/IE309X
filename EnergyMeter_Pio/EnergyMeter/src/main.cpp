@@ -22,7 +22,9 @@
  * Microcontrolador: Espressif ESP32
  * Kit de desenvolvimento: ESP32-WROOM32
  * 
- * Desenvolvido na Arduino IDE 1.8.9
+ * Desenvolvido no VSCode, usando o plugin PatformIO IDE
+ * Framework: Arduino
+ * Dependências: Blynk
  * 
  ******************************************************/
 
@@ -30,40 +32,18 @@
  *  Includes
  *-----------------------------------------------------*/
 
-// Includes para o Blynk
-//#include <WiFi.h>
-//#include <WiFiClient.h>
-//#include <BlynkSimpleEsp32.h>
-// Rotinas para configuração da SPI
-//#include <SPI.h>
-// DMA para salvar SSID e Pass
-//#include <EEPROM.h>
-// Lib do ADE7758 (clonado de engkan2kit)
-//#include "ADE7758Lib.h" /* https://github.com/engkan2kit/ADE7758 */
-
-// ----- Arquivos do projeto -----
 #include <Arduino.h>
 #include <RGBLed.h>
 #include <UserInput.h>
 #include <DataStorage.h>
 #include <run.h>
 
+// Descomentar para incluir o arquivo de testes
+// #include <Tests.h>
+
 /*-----------------------------------------------------
  *  Definições e macros
  *-----------------------------------------------------*/
-
-#define PIN_IRQ     39  // IRQ no pino GPIO39 (input)
-#define PIN_APCF    34  //  
-#define PIN_VACPF   35  // 
-//#define PIN_LED_R   32  // LED RBG
-//#define PIN_LED_G   33  // LED RGB
-//#define PIN_LED_B   25  // LED RGB
-#define PIN_SCLK    14  // SPI Clock
-#define PIN_DOUT    12  // SPI data out
-#define PIN_DIN     13  // SPI data in
-#define PIN_CS      15  // SPI chip select
-
-#define PIN_DEVLED  2   // LED do devkit 
 
 /*-----------------------------------------------------
  *  Globais
@@ -73,22 +53,24 @@
  *  Funções
  *-----------------------------------------------------*/
 
+/* Comente ou descomente para escolher qual função chamar 
+ * O firmware principal está na função run() 
+ */
 void setup() {
 
     // testStorage();
     // testHexInput();
-    //testADE7758();
-    //testVRMS();
-    //testRGBLed();
-    //whCal();
-
-   // testBlynk();
-
-   // checkIfAlive();
+    // testADE7758();
+    // testVRMS();
+    // testRGBLed();
+    // whCal();
+    // testBlynk();
+    // checkIfAlive();
 
    run();
 }
 
+/* A loop() ficará vazia pois o loop infinito está dentro da run() */
 void loop() {
   
 }

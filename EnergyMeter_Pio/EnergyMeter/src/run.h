@@ -6,10 +6,12 @@
  * 
  *************************************/
 
-// Modo debug (verbose)
+// Modo debug
+// Escreva 1 para entrar no modo de Debug
+// Neste modo, valores fakes serão enviados para o Blynk
 #define DEBUGMODE 0
 
-// Constante W.h/LSB
+// Constante W.h/LSB (obtida através da calibração)
 #define WHLSB 0.000172F
 
 // Pino de interrupção do ADE
@@ -21,5 +23,7 @@
 // Timeout em segundos
 #define TOUT_S 10
 
+
+// Protótipo da função run
 void run();
 

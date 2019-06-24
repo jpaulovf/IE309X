@@ -6,28 +6,32 @@
  * 
  *************************************/
 
-#include <run.h>
+/*-----------------------------------------------------
+ *  Includes
+ *-----------------------------------------------------*/
 
+#include <run.h>
 #include <Arduino.h>
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <BlynkSimpleEsp32.h>
-
 #include <ADE7758.h>
 #include <DataStorage.h>
 #include <RGBLed.h>
-
 #include <cstdint>
 
-// Variáveis globais
-ADE7758Device *ade = new ADE7758Device();   // Dispositivo ADE7758 nos pinos padrão
-BlynkTimer btimer;  // Timer para enviar dados ao Blynk
-uint32_t errorCounter;
-portMUX_TYPE syncMux = portMUX_INITIALIZER_UNLOCKED;   // Mux usado para sincronização com as ISRs
-int blynkSliderValue;
-WidgetLED led_low(V14);
-WidgetLED led_wrn(V15);
-WidgetLED led_hgh(V16);
+
+/*-----------------------------------------------------
+ *  Globais
+ *-----------------------------------------------------*/
+
+ADE7758Device *ade = new ADE7758Device();               // Dispositivo ADE7758 nos pinos padrão
+BlynkTimer btimer;                                      // Timer para enviar dados ao Blynk
+portMUX_TYPE syncMux = portMUX_INITIALIZER_UNLOCKED;    // Mux usado para sincronização com as ISRs
+int blynkSliderValue;                                   // Valor lido no Slider do Blynk
+WidgetLED led_low(V14);                                 // LED verde do Blynk
+WidgetLED led_wrn(V15);                                 // LED amarelo do Blynk   
+WidgetLED led_hgh(V16);                                 // LED vermelho do Blynk
 
 // Parâmetros da conexão
 // @todo usar SmartConfig + Memória Interna
@@ -43,6 +47,10 @@ volatile uint8_t tout_flag;
 float awh_acc;
 float bwh_acc;
 float cwh_acc;
+
+/*-----------------------------------------------------
+ *  Funções
+ *-----------------------------------------------------*/
 
 // Interrupção de aquisição de kW.h
 void IRAM_ATTR IRQ_WH_Handler(){
@@ -79,16 +87,13 @@ void blynkTimerEvent(){
 
     Serial.println("Sending data to WiFi");
 
-    Serial.print("data = ");
-    Serial.println(awh_acc);
-
     // Enviando para o gráfico
     Blynk.virtualWrite(V0, awh_acc);
 
     // Enviando para o indicador de valor
     Blynk.virtualWrite(V9, awh_acc);
 
-    // Checando
+    // Comparando o valor com o Slider e atualizando os LEDs
     if (awh_acc < blynkSliderValue - 50){
         led_low.on();
         led_wrn.off();
@@ -150,15 +155,11 @@ static void ADEConfig(){
 // Função principal
 void run(){
 
-    // Valores de W.h "crus" para as 3 fases
+    // Valores de W.h "crus" para a fase A
     uint16_t awh_raw; 
-    // uint16_t bwh_raw; 
-    // uint16_t cwh_raw;
 
     // Valores convertidos para W.h
     float awh;
-    // float bwh;
-    // float cwh;
 
     // LED RGB
     RGBLed led(32, 25, 33);
@@ -168,13 +169,10 @@ void run(){
 
     // Inicializando Serial
     Serial.begin(9600);
-
     Serial.println("Running the CODE");
 
     // Inicializando os valores acumulados
     awh_acc = 0;
-    // bwh_acc = 0;
-    // cwh_acc = 0;
 
     // Inicializando LED
     led.write(1,1,0);   // Amarelo
@@ -182,14 +180,13 @@ void run(){
     // Inicializando o Blynk
     Serial.println("Initializing Blynk...");
     Blynk.begin(auth, ssid, pass);
-    Blynk.virtualWrite(V9, 0);
-
+    Blynk.virtualWrite(V9, 0);      // Iniciando o indicador de kW.h em zero
     Serial.println("Done!");
 
-    // Inicializando o timer do Blynk
+    // Inicializando o timer do Blynk (10 s)
     btimer.setInterval(BLYNK_MEAS_TIMER, blynkTimerEvent);
 
-    // Inicializando o timer de timeout
+    // Inicializando o timer de timeout (10 s)
     timeoutTimer = timerBegin(0, 80, true);
     timerAttachInterrupt(timeoutTimer, &onTimeout, true);
     timerAlarmWrite(timeoutTimer, TOUT_S*1000000, true);
@@ -211,8 +208,6 @@ void run(){
     // Configurando o ADE
     ADEConfig();
 
-
-
     // Mudando o LED
     led.write(0, 1, 0); // Verde
 
@@ -223,13 +218,11 @@ void run(){
         Blynk.run();
         btimer.run();
 
+        // Zerando o valor de W.h lido pelo ADE
         awh = 0;
-        // bwh = 0;
-        // cwh = 0;
 
         // Limpando o registrador de interrupções do ade
         ade->read24(REG_RSTATUS);
-
 
         // Espera pelo flag de medição
         Serial.println("Waiting for interrupt flag...");
@@ -248,6 +241,7 @@ void run(){
         ade_ready = 0;
         portEXIT_CRITICAL(&syncMux);
 
+        // Se não houve timeout, atualizar os valores
         if (tout_flag == 0){
             #if DEBUGMODE ==0
             // Lendo as medições
@@ -272,7 +266,7 @@ void run(){
         Serial.print(awh);
         Serial.println(" kW.h");
 
-        // Acumulando
+        // Acumulando o valor de kW.h lido
         awh_acc += awh;
 
         Serial.print("awh_acc = ");
