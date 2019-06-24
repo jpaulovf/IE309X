@@ -24,12 +24,16 @@ ADE7758Device *ade = new ADE7758Device();   // Dispositivo ADE7758 nos pinos pad
 BlynkTimer btimer;  // Timer para enviar dados ao Blynk
 uint32_t errorCounter;
 portMUX_TYPE syncMux = portMUX_INITIALIZER_UNLOCKED;   // Mux usado para sincronização com as ISRs
+int blynkSliderValue;
+WidgetLED led_low(V14);
+WidgetLED led_wrn(V15);
+WidgetLED led_hgh(V16);
 
 // Parâmetros da conexão
 // @todo usar SmartConfig + Memória Interna
 char auth[] = "a4079471987f4abd9c2a25ad8543e485";
-char ssid[] = "AndroidAPDBD3";
-char pass[] = "rdow3020";
+char ssid[] = "TP-LINK_LAB-LSMO";
+char pass[] = "sensores-lsmo";
 
 // Flags
 volatile uint8_t ade_ready;
@@ -43,6 +47,8 @@ float cwh_acc;
 // Interrupção de aquisição de kW.h
 void IRAM_ATTR IRQ_WH_Handler(){
 
+    Serial.println("Measurement complete");
+
     portENTER_CRITICAL_ISR(&syncMux);
     ade_ready = 1;
     portEXIT_CRITICAL_ISR(&syncMux);
@@ -52,23 +58,52 @@ void IRAM_ATTR IRQ_WH_Handler(){
 // Interrupção do timer de timeout
 void IRAM_ATTR onTimeout(){
 
+    Serial.println("Timed out");
+
     portENTER_CRITICAL_ISR(&syncMux);
     tout_flag = 1;
     portEXIT_CRITICAL_ISR(&syncMux);
 
 }
 
+// Função de leitura do slider
+BLYNK_WRITE(V10){
+    blynkSliderValue = param.asInt();
+    Serial.print("Slider value = ");
+    Serial.println(blynkSliderValue);
+}
+
 // Rotina de envio periódico dos dados (float) medidos pelo ADE
 // accWhx é o consumo acumulado em W.h da fase X
-void timerEvent(){
+void blynkTimerEvent(){
 
+    Serial.println("Sending data to WiFi");
+
+    Serial.print("data = ");
+    Serial.println(awh_acc);
+
+    // Enviando para o gráfico
     Blynk.virtualWrite(V0, awh_acc);
-    Blynk.virtualWrite(V1, bwh_acc);
-    Blynk.virtualWrite(V2, cwh_acc);
 
-    awh_acc = 0;
-    bwh_acc = 0;
-    cwh_acc = 0;
+    // Enviando para o indicador de valor
+    Blynk.virtualWrite(V9, awh_acc);
+
+    // Checando
+    if (awh_acc < blynkSliderValue - 50){
+        led_low.on();
+        led_wrn.off();
+        led_hgh.off();
+    }
+    else if ( (awh_acc >= blynkSliderValue - 50) && (awh_acc < blynkSliderValue) ){
+        led_low.off();
+        led_wrn.on();
+        led_hgh.off();
+    }
+    else{
+        led_low.off();
+        led_wrn.off();
+        led_hgh.on();
+    }
 
 }
 
@@ -79,6 +114,8 @@ static void ADEConfig(){
     uint8_t data8;
     uint16_t data16;
     uint32_t data24;
+
+    Serial.println("Configuring ADE...");
 
     // Zerando ACPFNUM e ACPFDEN
     data16 = 0x0000;
@@ -106,6 +143,8 @@ static void ADEConfig(){
     data24 = 0x001000;
     ade->write24(REG_MASK, data24);
 
+    Serial.println("Done!");
+
 }
 
 // Função principal
@@ -113,13 +152,13 @@ void run(){
 
     // Valores de W.h "crus" para as 3 fases
     uint16_t awh_raw; 
-    uint16_t bwh_raw; 
-    uint16_t cwh_raw;
+    // uint16_t bwh_raw; 
+    // uint16_t cwh_raw;
 
     // Valores convertidos para W.h
     float awh;
-    float bwh;
-    float cwh;
+    // float bwh;
+    // float cwh;
 
     // LED RGB
     RGBLed led(32, 25, 33);
@@ -127,22 +166,28 @@ void run(){
     // Timer de timeout
     hw_timer_t *timeoutTimer = NULL;
 
+    // Inicializando Serial
+    Serial.begin(9600);
+
+    Serial.println("Running the CODE");
+
     // Inicializando os valores acumulados
     awh_acc = 0;
-    bwh_acc = 0;
-    cwh_acc = 0;
+    // bwh_acc = 0;
+    // cwh_acc = 0;
 
     // Inicializando LED
     led.write(1,1,0);   // Amarelo
 
     // Inicializando o Blynk
+    Serial.println("Initializing Blynk...");
     Blynk.begin(auth, ssid, pass);
+    Blynk.virtualWrite(V9, 0);
 
-    // Inicializando Serial
-    Serial.begin(9600);
+    Serial.println("Done!");
 
     // Inicializando o timer do Blynk
-    btimer.setInterval(BLYNK_MEAS_TIMER, timerEvent);
+    btimer.setInterval(BLYNK_MEAS_TIMER, blynkTimerEvent);
 
     // Inicializando o timer de timeout
     timeoutTimer = timerBegin(0, 80, true);
@@ -166,9 +211,7 @@ void run(){
     // Configurando o ADE
     ADEConfig();
 
-    // Rodando o Blynk e o seu timer
-    Blynk.run();
-    btimer.run();
+
 
     // Mudando o LED
     led.write(0, 1, 0); // Verde
@@ -176,40 +219,65 @@ void run(){
     // Loop principal
     while (1){
 
+        // Rodando o Blynk e o seu timer
+        Blynk.run();
+        btimer.run();
+
+        awh = 0;
+        // bwh = 0;
+        // cwh = 0;
+
         // Limpando o registrador de interrupções do ade
         ade->read24(REG_RSTATUS);
 
+
         // Espera pelo flag de medição
+        Serial.println("Waiting for interrupt flag...");
+        #if DEBUGMODE == 1
+            delay(2000);
+        #else
         while (ade_ready == 0 && tout_flag == 0){
              timerAlarmEnable(timeoutTimer);
-        }     
+        }   
+        #endif  
 
         timerAlarmDisable(timeoutTimer);
-
-        // Zerando o flag de interrupções de timeout
-        portENTER_CRITICAL(&syncMux);
-        tout_flag = 0;
-        portEXIT_CRITICAL(&syncMux);
 
         // Zerando o flag de interrupções
         portENTER_CRITICAL(&syncMux);
         ade_ready = 0;
         portEXIT_CRITICAL(&syncMux);
 
-        // Lendo as medições
-        awh_raw = ade->read16(REG_AWATTHR);
-        bwh_raw = ade->read16(REG_BWATTHR);
-        cwh_raw = ade->read16(REG_CWATTHR);
+        if (tout_flag == 0){
+            #if DEBUGMODE ==0
+            // Lendo as medições
+            awh_raw = ade->read16(REG_AWATTHR);
 
-        // Convertendo para W.h
-        awh = ((float) awh_raw) * WHLSB;
-        bwh = ((float) bwh_raw) * WHLSB;
-        cwh = ((float) cwh_raw) * WHLSB;
+            // Convertendo para W.h
+            awh = ((float) awh_raw) * WHLSB;
+
+            // Convertendo para kW.h
+            awh = awh/1000;
+            #else
+                awh = 10;
+            #endif
+        }
+
+        // Zerando o flag de interrupções de timeout
+        portENTER_CRITICAL(&syncMux);
+        tout_flag = 0;
+        portEXIT_CRITICAL(&syncMux);
+
+        Serial.print("awh = ");
+        Serial.print(awh);
+        Serial.println(" kW.h");
 
         // Acumulando
         awh_acc += awh;
-        bwh_acc += bwh;
-        cwh_acc += cwh;
+
+        Serial.print("awh_acc = ");
+        Serial.print(awh_acc);
+        Serial.println(" kW.h");
 
     }
 

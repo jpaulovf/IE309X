@@ -46,7 +46,7 @@
 #include <RGBLed.h>
 #include <UserInput.h>
 #include <DataStorage.h>
-#include "Tests.h"
+#include <run.h>
 
 /*-----------------------------------------------------
  *  Definições e macros
@@ -82,9 +82,11 @@ void setup() {
     //testRGBLed();
     //whCal();
 
-    testBlynk();
+   // testBlynk();
 
    // checkIfAlive();
+
+   run();
 }
 
 void loop() {

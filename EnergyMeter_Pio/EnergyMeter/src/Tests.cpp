@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include <RGBLed.h>
 
-#include <BlynkSimpleEsp32.h>
+//#include <BlynkSimpleEsp32.h>
 #include <WiFi.h>
 #include <WiFiClient.h>
 
@@ -511,39 +511,39 @@ void checkIfAlive(){
 }
 
 // Testa o Blynk
+//
+//void timerEvent(){
+//
+//  uint16_t number;
+//
+//  srand(time(NULL));
+//
+//  number = rand() % 10 + 1;
+//
+//  Blynk.virtualWrite(V0, number);
+//
+//}
 
-void timerEvent(){
-
-  uint16_t number;
-
-  srand(time(NULL));
-
-  number = rand() % 10 + 1;
-
-  Blynk.virtualWrite(V0, number);
-
-}
-
-void testBlynk(){
-
-  char auth[] = "a4079471987f4abd9c2a25ad8543e485";
-  char ssid[] = "AndroidAPDBD3";
-  char pass[] = "rdow3020";
-
-  BlynkTimer timer;
-
-  Serial.begin(9600);
-
-  Blynk.begin(auth, ssid, pass);
-
-  timer.setInterval(1000, timerEvent);
-
-  while(1){
-
-    Blynk.run();
-    timer.run();
-
-  }
-
-
-}
+//void testBlynk(){
+//
+//  char auth[] = "a4079471987f4abd9c2a25ad8543e485";
+//  char ssid[] = "AndroidAPDBD3";
+//  char pass[] = "rdow3020";
+//
+//  BlynkTimer timer;
+//
+//  Serial.begin(9600);
+//
+//  Blynk.begin(auth, ssid, pass);
+//
+//  timer.setInterval(1000, timerEvent);
+//
+//  while(1){
+//
+//    Blynk.run();
+//    timer.run();
+//
+//  }
+//
+//
+//}

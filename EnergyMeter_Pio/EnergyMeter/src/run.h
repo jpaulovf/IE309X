@@ -16,7 +16,7 @@
 #define ADE_IRQ_PIN 26
 
 // Intervalo de medição do Blynk em segundos
-#define BLYNK_MEAS_TIMER 1000L
+#define BLYNK_MEAS_TIMER 10000L
 
 // Timeout em segundos
 #define TOUT_S 10
