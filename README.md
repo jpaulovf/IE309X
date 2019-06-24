@@ -12,8 +12,6 @@ Este repositório contém os códigos desenvolvidos para a disciplina IE309X da 
 - Gabriel Legramanti
 - João Fracarolli
 
-Neste repositório colocaremos o código-fonte do ESP32 e outros eventuais códigos que forem necessários, além de outros arquivos do projeto.
-
 ### 2. Clonando
 
 Para clonar este repositório, digite:
@@ -24,11 +22,6 @@ Para clonar este repositório, digite:
 
 Este repositório, até o momento, possui os seguintes diretórios:
 
-- **Source**: Diretório com os códigos-fonte.
-    - **TesteBlynk**: Diretório com o primeiro teste do ESP32 com Blynk.
-    - **libraries**: Bibliotecas necessárias para que os testes funcionem.
-    - **ESP32_SPI**: Teste do ESP32 com comunicação SPI.
-    - **EnergyMeter**: Arquivos com o firmware principal.
 - **Projeto**: Diretório com arquivos do projeto.
     - **Schematics**: Esquemáticos do projeto eletrônico.
     - **Firmware**: Diagramas do projeto do firmware.
@@ -70,12 +63,12 @@ Fonte: [Baú da Eletrônica](http://www.baudaeletronica.com.br)
 |                       | S1&nbsp;S2&nbsp;S3&nbsp;S4 | S1&nbsp;S2&nbsp;S3&nbsp;S4 | S1&nbsp;S2&nbsp;S3&nbsp;S4 | S1&nbsp;S2&nbsp;S3&nbsp;S4 |
 | Estudo preliminar     | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;|             |             |             |
 | Hardware: esquemático |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| O&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
-| Hardware: PCB         |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
-| Firmware              |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
-| Aplicação             |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|             |
-| Integração            |             |             |&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; #&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;      |
-| Testes unitários      |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;X&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;| #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|
-| Testes finais         |             |             |             | #&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;#&nbsp; &nbsp;|
+| Hardware: PCB         |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;O&nbsp; &nbsp;|             |
+| Firmware              |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;|  X&nbsp; &nbsp;X&nbsp; &nbsp;O&nbsp;           |
+| Aplicação             |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;X&nbsp; &nbsp;O&nbsp;            |
+| Integração            |             |             |&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; #&nbsp; &nbsp;#&nbsp; &nbsp;| X&nbsp; &nbsp;X&nbsp; &nbsp;O&nbsp;      | 
+| Testes unitários      |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;| X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;O&nbsp; &nbsp;|
+| Testes finais         |             |             |             | X&nbsp; &nbsp;X&nbsp; &nbsp;X&nbsp; &nbsp;O&nbsp; &nbsp;|
 
 ---
 
