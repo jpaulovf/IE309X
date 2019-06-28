@@ -1,0 +1,4 @@
+Record=TopLevelDocument|FileName=Master.SchDoc
+Record=SheetSymbol|SourceDocument=Master.SchDoc|Designator=U_ADE7758|SchDesignator=U_ADE7758|FileName=ADE7758.SchDoc|SymbolType=Normal|RawFileName=ADE7758.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
+Record=SheetSymbol|SourceDocument=Master.SchDoc|Designator=U_ESP32|SchDesignator=U_ESP32|FileName=ESP32.SchDoc|SymbolType=Normal|RawFileName=ESP32.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
+Record=SheetSymbol|SourceDocument=Master.SchDoc|Designator=U_PowerSupply|SchDesignator=U_PowerSupply|FileName=PowerSupply.SchDoc|SymbolType=Normal|RawFileName=PowerSupply.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
